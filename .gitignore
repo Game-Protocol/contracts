@@ -1,0 +1,10 @@
+/Examples
+/node_modules
+/solidity/node_modules
+/solidity/build
+/solidity/bin
+constructor_arguments_in_abi.js
+instructions.txt
+TestCases.xlsx
+prefs.json
+wallets.json

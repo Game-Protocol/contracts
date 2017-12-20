@@ -7,17 +7,18 @@ import './Project.sol';
 contract GameStarter is TokenHolder {
 
     uint activeProjects = 0;
-    Project[] public projects;
+    address[] public projects;
 
     event ProjectAdded(address indexed creator, address project);
 
     function GameStarter() {
 
     }
-
-    function CreateProject(bool isFixed, string title, string desc, string website, uint256 fundingGoal) {
-        Project p = new Project(msg.sender, isFixed, title, desc, website, fundingGoal);
+    
+    function createProject(bool _isFixed, string _title, string _category, string _description, string _website, uint256 _fundingGoal) {
+        address p = new Project(msg.sender, _isFixed, _title,_category, _description, _website, _fundingGoal);
         projects.push(p);
         activeProjects = activeProjects + 1;
+        ProjectAdded(msg.sender, p);
     }
 }

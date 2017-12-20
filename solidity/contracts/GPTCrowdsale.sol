@@ -58,9 +58,9 @@ contract GPTCrowdsale is TokenHolder {
         tokenReward = GPToken(_tokenAddress);
     }
 
-    function changeBeneficiary(address _newBeneficiary) validAddress(_newBeneficiary) ownerOnly {
-        beneficiary = _newBeneficiary;
-    }
+    // function changeBeneficiary(address _newBeneficiary) validAddress(_newBeneficiary) ownerOnly {
+    //     beneficiary = _newBeneficiary;
+    // }
 
     /**
      * Fallback function

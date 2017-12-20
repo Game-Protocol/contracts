@@ -7,12 +7,12 @@ import './TokenHolder.sol';
 contract GPToken is ERC20Token, TokenHolder {
 
     uint256 constant public GPT_UNIT = 10 ** 18;
-    uint256 public totalSupply = 1 * (10**8) * GPT_UNIT;
+    uint256 public totalSupply = 150 * 10**6 * GPT_UNIT;                        // Total supply of 100 milion tokens
 
-    uint256 constant public CROWDSALE_ALLOCATION = 58 * 10**6 * GPT_UNIT;      // Crowdsale Allocation
-    uint256 constant public MARKETING_ALLOCATION = 10 * 10**6 * GPT_UNIT;      // Incentivisation Allocation
-    uint256 constant public ADVISORS_ALLOCATION = 2 * 10**6 * GPT_UNIT;        // Advisors Allocation
-    uint256 constant public TEAM_ALLOCATION = 30 * 10**6 * GPT_UNIT;           // Team allocation
+    uint256 constant public CROWDSALE_ALLOCATION = 87 * 10**6 * GPT_UNIT;       // Crowdsale Allocation 58%
+    uint256 constant public MARKETING_ALLOCATION = 15 * 10**6 * GPT_UNIT;       // Incentivisation Allocation 10%
+    uint256 constant public ADVISORS_ALLOCATION = 3 * 10**6 * GPT_UNIT;         // Advisors Allocation 2%
+    uint256 constant public TEAM_ALLOCATION = 45 * 10**6 * GPT_UNIT;            // Team allocation 30%
 
     uint256 constant public TIMELOCK = 6 * 4 weeks;                             // Team release and unsold retrieval timelock after the end of crowdsale
     uint256 constant public ADVISORS_TIMELOCK = 2 * 4 weeks;                    // Advisor release timelock after the end of crowdsale
@@ -31,12 +31,7 @@ contract GPToken is ERC20Token, TokenHolder {
     uint256 internal teamTranchesReleased = 0;                          
     uint256 internal maxTeamTranches = 4;     
 
-    function GPToken(
-        address _crowdFundAddress,
-        address _advisorAddress, 
-        address _marketingFundAddress, 
-        address _teamAddress, 
-        uint256 _durationInMinutes) 
+    function GPToken(address _crowdFundAddress, address _advisorAddress, address _marketingFundAddress,  address _teamAddress, uint256 _durationInMinutes) 
         ERC20Token("Game Protocol Token", "GPT", 18)
     {
         crowdFundAddress = _crowdFundAddress;
