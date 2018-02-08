@@ -19,13 +19,12 @@ module.exports = {
       port: 8545,
       network_id: "*" // Match any network id
     },
-    ropsten: {
-      provider: new HDWalletProvider(key, "https://ropsten.infura.io/" + infuraApi),
-      network_id: 2,
-      gas: 4700000
-    },
     mainnet: {
       provider: new HDWalletProvider(key, "https://mainnet.infura.io/" + infuraApi),
+      network_id: 2,
+    },
+    ropsten: {
+      provider: new HDWalletProvider(key, "https://ropsten.infura.io/" + infuraApi),
       network_id: 3,
     },
     rinkeby: {
