@@ -1,8 +1,8 @@
 /Examples
 /node_modules
 /solidity/node_modules
-/solidity/build
 /solidity/bin
+/solidity/build
 constructor_arguments_in_abi.js
 instructions.txt
 TestCases.xlsx

@@ -6,7 +6,8 @@ import './Project.sol';
 
 contract GameStarter is TokenHolder {
 
-    uint activeProjects = 0;
+    string public version = "0.1";
+    uint public activeProjects = 0;
     address[] public projects;
 
     event ProjectAdded(address indexed creator, address project);
