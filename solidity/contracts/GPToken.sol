@@ -1,13 +1,13 @@
 pragma solidity ^0.4.15;
 
-import './ERC20Token.sol';
-import './TokenHolder.sol';
+import "./ERC20Token.sol";
+import "./TokenHolder.sol";
 
 
 contract GPToken is ERC20Token, TokenHolder {
 
     uint256 constant public GPT_UNIT = 10 ** 18;
-    uint256 public totalSupply = 150 * 10**6 * GPT_UNIT;                        // Total supply of 100 milion tokens
+    uint256 public totalSupply = 150 * 10**6 * GPT_UNIT;                        // Total supply of 150 milion tokens
 
     uint256 constant public CROWDSALE_ALLOCATION = 87 * 10**6 * GPT_UNIT;       // Crowdsale Allocation 58%
     uint256 constant public MARKETING_ALLOCATION = 15 * 10**6 * GPT_UNIT;       // Incentivisation Allocation 10%
@@ -31,9 +31,7 @@ contract GPToken is ERC20Token, TokenHolder {
     uint256 internal teamTranchesReleased = 0;                          
     uint256 internal maxTeamTranches = 4;     
 
-    function GPToken(address _crowdFundAddress, address _advisorAddress, address _marketingFundAddress,  address _teamAddress, uint256 _durationInMinutes) 
-        ERC20Token("Game Protocol Token", "GPT", 18)
-    {
+    function GPToken(address _crowdFundAddress, address _advisorAddress, address _marketingFundAddress,  address _teamAddress, uint256 _durationInMinutes) ERC20Token("Game Protocol Token", "GPT", 18) public {
         crowdFundAddress = _crowdFundAddress;
         advisorAddress = _advisorAddress;
         teamAddress = _teamAddress;
@@ -44,11 +42,11 @@ contract GPToken is ERC20Token, TokenHolder {
         totalAllocated += MARKETING_ALLOCATION;                                             // Add to total Allocated funds
     }
 
-    function getTime() constant returns(int) {
+    function getTime() internal constant returns(int) {
         return int(now - crowdSaleEndTime);
     }
 
-    function getTeamTranchesReleased() constant returns(uint256) {
+    function getTeamTranchesReleased() internal constant returns(uint256) {
         return teamTranchesReleased;
     }
 
@@ -100,7 +98,7 @@ contract GPToken is ERC20Token, TokenHolder {
         12 months: 25%
         @return true if successful, throws if not
     */
-    function releaseTeamTokens() safeTimelock ownerOnly returns(bool success) {
+    function releaseTeamTokens() public safeTimelock ownerOnly returns(bool success) {
         require(totalAllocatedToTeam < TEAM_ALLOCATION);
 
         uint256 teamAlloc = TEAM_ALLOCATION / 100;
@@ -128,7 +126,7 @@ contract GPToken is ERC20Token, TokenHolder {
 
         @return true if successful, throws if not
     */
-    function releaseAdvisorTokens() advisorTimelock ownerOnly returns(bool success) {
+    function releaseAdvisorTokens() public advisorTimelock ownerOnly returns(bool success) {
         require(totalAllocatedToAdvisors == 0);
         balanceOf[advisorAddress] = safeAdd(balanceOf[advisorAddress], ADVISORS_ALLOCATION);
         totalAllocated = safeAdd(totalAllocated, ADVISORS_ALLOCATION);
@@ -144,7 +142,7 @@ contract GPToken is ERC20Token, TokenHolder {
 
         @return true if successful, throws if not
     */
-    function retrieveUnsoldTokens() safeTimelock ownerOnly returns(bool success) {
+    function retrieveUnsoldTokens() public safeTimelock ownerOnly returns(bool success) {
         uint256 amountOfTokens = balanceOf[crowdFundAddress];
         balanceOf[crowdFundAddress] = 0;
         balanceOf[marketingFundAddress] = safeAdd(balanceOf[marketingFundAddress], amountOfTokens);
@@ -157,7 +155,7 @@ contract GPToken is ERC20Token, TokenHolder {
         @dev Keep track of token allocations
         can only be called by the crowdfund contract
     */
-    function addToAllocation(uint256 _amount) crowdfundOnly {
+    function addToAllocation(uint256 _amount) public crowdfundOnly {
         totalAllocated = safeAdd(totalAllocated, _amount);
     }
 
@@ -166,7 +164,7 @@ contract GPToken is ERC20Token, TokenHolder {
         can only be called by the owner of the contract
         Transfers will be allowed regardless after the crowdfund end time.
     */
-    function allowTransfers() ownerOnly {
+    function allowTransfers() public ownerOnly {
         isReleasedToPublic = true;
     } 
 

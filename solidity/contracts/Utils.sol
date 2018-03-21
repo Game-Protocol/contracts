@@ -7,7 +7,7 @@ contract Utils {
     /**
         constructor
     */
-    function Utils() {
+    function Utils() public {
     }
 
     // validates an address - currently only checks that it isn't null

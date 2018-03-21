@@ -1,7 +1,7 @@
 pragma solidity ^0.4.15;
 
-import './GPToken.sol';
-import './TokenHolder.sol';
+import "./GPToken.sol";
+import "./TokenHolder.sol";
 
 contract GPTCrowdsale is TokenHolder {
     uint256 public amountRaised = 0;
@@ -24,7 +24,7 @@ contract GPTCrowdsale is TokenHolder {
         uint durationInMinutes,
         uint etherPriceInTokens,
         uint bonusWeeks,
-        uint maxBonusPercent) {
+        uint maxBonusPercent) public {
             
         beneficiary = ifSuccessfulSendTo;
         deadline = now + durationInMinutes * 1 minutes; // TODO: maybe change to weeks instead of minutes (and variable durationInMinutes)
@@ -48,12 +48,11 @@ contract GPTCrowdsale is TokenHolder {
         return index;
     }
 
-    function getTokenFromEther(uint256 contribution) constant returns (uint256) { //internal
+    function getTokenFromEther(uint256 contribution) internal constant returns (uint256) { //internal
         return safeMul(contribution, prices[getStep()]);
     }
 
-    function setToken(address _tokenAddress) validAddress(_tokenAddress) ownerOnly {
-        require(tokenAddress == 0x0);
+    function setToken(address _tokenAddress) public validAddress(_tokenAddress) ownerOnly {
         tokenAddress = _tokenAddress;
         tokenReward = GPToken(_tokenAddress);
     }
@@ -67,7 +66,7 @@ contract GPTCrowdsale is TokenHolder {
      *
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
-    function () beforeDeadline tokenIsSet payable {
+    function () public beforeDeadline tokenIsSet payable {
         uint256 tokens = getTokenFromEther(msg.value);
         beneficiary.transfer(msg.value);
         tokenReward.transfer(msg.sender, tokens);

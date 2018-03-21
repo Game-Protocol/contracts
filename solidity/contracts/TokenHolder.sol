@@ -1,8 +1,9 @@
 pragma solidity ^0.4.15;
-import './Owned.sol';
-import './Utils.sol';
-import './interfaces/IERC20Token.sol';
-import './interfaces/ITokenHolder.sol';
+
+import "./Owned.sol";
+import "./Utils.sol";
+import "./interfaces/IERC20Token.sol";
+import "./interfaces/ITokenHolder.sol";
 
 /*
     We consider every contract to be a 'token holder' since it's currently not possible
@@ -15,7 +16,7 @@ contract TokenHolder is ITokenHolder, Owned, Utils {
     /**
         @dev constructor
     */
-    function TokenHolder() {
+    function TokenHolder() public {
     }
 
     /**

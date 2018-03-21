@@ -1,5 +1,5 @@
 pragma solidity ^0.4.15;
-import './interfaces/IOwned.sol';
+import "./interfaces/IOwned.sol";
 
 /*
     Provides support and utilities for contract ownership
@@ -13,7 +13,7 @@ contract Owned is IOwned {
     /**
         @dev constructor
     */
-    function Owned() {
+    function Owned() public {
         owner = msg.sender;
     }
 

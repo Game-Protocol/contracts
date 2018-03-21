@@ -1,6 +1,6 @@
 pragma solidity ^0.4.15;
 
-import '../TokenHolder.sol';
+import "../TokenHolder.sol";
 
 
 contract Project is TokenHolder {
@@ -16,7 +16,7 @@ contract Project is TokenHolder {
     uint public backerCount = 0;
     mapping  (address => uint256) public backers;
 
-    function Project(address _creator, bool _isFixed, string _title, string _category, string _description, string _website, uint256 _fundingGoal) {
+    function Project(address _creator, bool _isFixed, string _title, string _category, string _description, string _website, uint256 _fundingGoal) public {
         owner = _creator;
         isFixed = _isFixed;
         title = _title;
