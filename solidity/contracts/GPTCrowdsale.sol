@@ -66,12 +66,22 @@ contract GPTCrowdsale is TokenHolder {
      *
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
-    function () public beforeDeadline tokenIsSet payable {
+    function () public payable {
+        contribute(msg.sender);
+    }
+
+    /**
+     * Contribute function
+     *
+     * This function is used if the backer wants that the tokens will be transfered to another account
+     * Useful for contributing from an exchange
+     */
+    function contribute(address transferTokensToAddress) public validAddress(transferTokensToAddress) beforeDeadline tokenIsSet payable {
         uint256 tokens = getTokenFromEther(msg.value);
         beneficiary.transfer(msg.value);
-        tokenReward.transfer(msg.sender, tokens);
+        tokenReward.transfer(transferTokensToAddress, tokens);
         tokenReward.addToAllocation(tokens);
-        Contribution(msg.sender, msg.value, tokens);
+        Contribution(transferTokensToAddress, msg.value, tokens);
     }
 
     modifier beforeDeadline() {

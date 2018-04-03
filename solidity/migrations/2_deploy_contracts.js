@@ -4,7 +4,6 @@ var fs = require('fs');
 
 module.exports = function (deployer) {
   var prefs_json = JSON.parse(fs.readFileSync("../../prefs.json", "utf8"));
-  console.log("prefs_json: \n", prefs_json);
   var team = prefs_json["team"];
   var advisors = prefs_json["advisors"];
   var marketing = prefs_json["marketing"];
