@@ -1,96 +1,133 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.23;
 
 import "./GPToken.sol";
-import "./TokenHolder.sol";
+import "./crowdsale/distribution/FinalizableCrowdsale.sol";
+import "./crowdsale/emission/MintedCrowdsale.sol";
+import "./crowdsale/validation/WhitelistedCrowdsale.sol";
+import "./crowdsale/validation/CappedTokenCrowdsale.sol";
+import "./GPTTeamTokenTimelock.sol";
+import "./crowdsale/Crowdsale.sol";
 
-contract GPTCrowdsale is TokenHolder {
-    uint256 public amountRaised = 0;
-    uint256 public deadline = 0;
+import "./GPToken.sol";
 
-    uint256[] public prices;
-    uint256[] public timeSteps;
+/**
+ * @title GPTCrowdsale
+ * @dev Game Protocol Crowdsale contract.
+ * The way to add new features to a base crowdsale is by multiple inheritance.
+ * In this example we are providing following extensions:
+ *
+ * After adding multiple features it's good practice to run integration tests
+ * to ensure that subcontracts works together as intended.
+ */
+contract GPTCrowdsale is FinalizableCrowdsale, MintedCrowdsale, WhitelistedCrowdsale, CappedTokenCrowdsale {
 
-    address public beneficiary = 0x0;
-    address public tokenAddress = 0x0;
-    GPToken public tokenReward;
+    uint256 constant public GPT_UNIT = 10 ** 18;
+    uint256 constant public TOTAL_SUPPLY = 150 * 10**6 * GPT_UNIT;                          // Total supply of 150 milion tokens
 
-    event Contribution(address indexed backer, uint256 amount, uint256 tokenAmount);
+    uint256 constant public CROWDSALE_ALLOCATION = 87 * 10**6 * GPT_UNIT;                   // Crowdsale Allocation 58%
+    uint256 constant public GAME_SUPPORT_FUND_ALLOCATION = 15 * 10**6 * GPT_UNIT;           // Game support fund Allocation 10%
+    uint256 constant public BOUNTY_PROGRAM_ALLOCATION = 3 * 10**6 * GPT_UNIT;               // Bounty program Allocation 2%
+    uint256 constant public ADVISORS_AND_PARTNERSHIP_ALLOCATION = 15 * 10**6 * GPT_UNIT;    // Advisors and partnership Allocation 10%
+    uint256 constant public TEAM_ALLOCATION = 30 * 10**6 * GPT_UNIT;                        // Team allocation 20%
+
+    address public walletGameSupportFund;                                                   // Address that holds the advisors tokens
+    address public walletBountyProgram;                                                     // Address that holds the marketing tokens
+    address public walletAdvisorsAndPartnership;                                            // Address that holds the advisors tokens
+    address public walletTeam;                                                              // Address that holds the team tokens
+
+
+    constructor (
+        uint256 _openingTime,
+        uint256 _closingTime,
+        uint256 _rate,
+        address _wallet,
+        address _walletGameSupportFund, 
+        address _walletBountyProgram,
+        address _walletAdvisorsAndPartnership, 
+        address _walletTeam, 
+        GPToken _token
+    ) 
+        public
+        Crowdsale(_rate, _wallet, _token)
+        TimedCrowdsale(_openingTime, _closingTime)
+        CappedTokenCrowdsale(CROWDSALE_ALLOCATION)
+    {
+        require(_walletGameSupportFund != address(0));
+        require(_walletBountyProgram != address(0));
+        require(_walletAdvisorsAndPartnership != address(0));
+        require(_walletTeam != address(0));
+
+        walletGameSupportFund = _walletGameSupportFund;
+        walletBountyProgram = _walletBountyProgram;
+        walletAdvisorsAndPartnership = _walletAdvisorsAndPartnership;
+        walletTeam = _walletTeam;
+    }
+
+    // Helper function to add a percent of the value to a value
+    function addPercent(uint8 percent, uint256 value) internal pure returns(uint256) {
+        return value.add(value.mul(percent).div(100));
+    }
+
+    // =================================================================================================================
+    //                                      Impl Crowdsale
+    // =================================================================================================================
 
     /**
-     * Constrctor function
+     * @return the token amount according to the time of the tx and the GPT pricing program.
      */
-    function GPTCrowdsale(
-        address ifSuccessfulSendTo,
-        uint durationInMinutes,
-        uint etherPriceInTokens,
-        uint bonusWeeks,
-        uint maxBonusPercent) public {
-            
-        beneficiary = ifSuccessfulSendTo;
-        deadline = now + durationInMinutes * 1 minutes; // TODO: maybe change to weeks instead of minutes (and variable durationInMinutes)
-
-        for (uint8 i = 0; i <= bonusWeeks; i++) {
-            timeSteps.push(deadline - (i + 1) * 1 weeks);
-            prices.push(etherPriceInTokens + etherPriceInTokens * i * maxBonusPercent / (bonusWeeks * 100));
+    function _getTokenAmount(uint256 _weiAmount) internal view returns (uint256) {
+        // solium-disable-next-line security/no-block-members
+        if (now < (closingTime.sub(4 weeks))) {
+            return _weiAmount.mul(addPercent(20, rate)); 
         }
-    }
-
-    function tokensSold() public constant returns(uint256) {
-        return tokenReward.totalAllocated();
-    }
-
-    function getStep() internal constant returns (uint8) {
-        for (uint8 index = 0; index < timeSteps.length - 1; index++) {
-            if (now > timeSteps[index]) {
-                break;
-            }
+        // solium-disable-next-line security/no-block-members
+        if (now < (closingTime.sub(3 weeks))) {
+            return _weiAmount.mul(addPercent(15, rate)); 
         }
-        return index;
+        // solium-disable-next-line security/no-block-members
+        if (now < (closingTime.sub(2 weeks))) {
+            return _weiAmount.mul(addPercent(10, rate)); 
+        }
+        // solium-disable-next-line security/no-block-members
+        if (now < (closingTime.sub(1 weeks))) {
+            return _weiAmount.mul(addPercent(5, rate)); 
+        }
+        return _weiAmount.mul(rate);
     }
 
-    function getTokenFromEther(uint256 contribution) internal constant returns (uint256) { //internal
-        return safeMul(contribution, prices[getStep()]);
-    }
+    // =================================================================================================================
+    //                                      Impl FinalizableCrowdsale
+    // =================================================================================================================
 
-    function setToken(address _tokenAddress) public validAddress(_tokenAddress) ownerOnly {
-        tokenAddress = _tokenAddress;
-        tokenReward = GPToken(_tokenAddress);
-    }
+    function finalization() internal onlyOwner {
+        super.finalization();
 
-    // function changeBeneficiary(address _newBeneficiary) validAddress(_newBeneficiary) ownerOnly {
-    //     beneficiary = _newBeneficiary;
-    // }
+        // 20% of the total number of GPT tokens will be allocated to the team
+        // create a timed wallet that will release the tokens every 6 months
+        GPTTeamTokenTimelock timelock = new GPTTeamTokenTimelock(token, walletTeam, closingTime);
+        _deliverTokens(address(timelock), TEAM_ALLOCATION);
 
-    /**
-     * Fallback function
-     *
-     * The function without name is the default function that is called whenever anyone sends funds to a contract
-     */
-    function () public payable {
-        contribute(msg.sender);
-    }
+        // _deliverTokens(walletTeam, TEAM_ALLOCATION); // TODO: replace 
 
-    /**
-     * Contribute function
-     *
-     * This function is used if the backer wants that the tokens will be transfered to another account
-     * Useful for contributing from an exchange
-     */
-    function contribute(address transferTokensToAddress) public validAddress(transferTokensToAddress) beforeDeadline tokenIsSet payable {
-        uint256 tokens = getTokenFromEther(msg.value);
-        beneficiary.transfer(msg.value);
-        tokenReward.transfer(transferTokensToAddress, tokens);
-        tokenReward.addToAllocation(tokens);
-        Contribution(transferTokensToAddress, msg.value, tokens);
-    }
+        // 10% of the total number of GPT tokens will be allocated to the game support fund
+        _deliverTokens(walletGameSupportFund, GAME_SUPPORT_FUND_ALLOCATION);
 
-    modifier beforeDeadline() {
-        require(now < deadline);
-        _; 
-    }
+        // 2% of the total number of GPT tokens will be allocated to the bounty program
+        _deliverTokens(walletBountyProgram, BOUNTY_PROGRAM_ALLOCATION);
 
-    modifier tokenIsSet() {
-        require(tokenAddress != 0x0);
-        _;
+        // 10% of the total number of GPT tokens will be allocated to the advisors and partnership
+        _deliverTokens(walletAdvisorsAndPartnership, ADVISORS_AND_PARTNERSHIP_ALLOCATION);
+
+        // The ramaining tokens that ware not sold in the crowdsale will be sent to a game support fund
+        // TODO: or burned?
+        uint256 tokensLeft = CROWDSALE_ALLOCATION - tokensAllocated; //remainingTokens();
+        _deliverTokens(walletGameSupportFund, tokensLeft);
+
+        GPToken(token).finishMinting();
+
+        // Re-enable transfers and burn after the token sale.
+        GPToken(token).unpause();
+
+        GPToken(token).transferOwnership(owner);
     }
 }
