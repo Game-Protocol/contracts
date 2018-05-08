@@ -35,6 +35,8 @@ contract GPTCrowdsale is FinalizableCrowdsale, MintedCrowdsale, WhitelistedCrowd
     address public walletAdvisorsAndPartnership;                                            // Address that holds the advisors tokens
     address public walletTeam;                                                              // Address that holds the team tokens
 
+    address public teamTimelock;
+     
 
     constructor (
         uint256 _openingTime,
@@ -103,11 +105,10 @@ contract GPTCrowdsale is FinalizableCrowdsale, MintedCrowdsale, WhitelistedCrowd
         super.finalization();
 
         // 20% of the total number of GPT tokens will be allocated to the team
-        // create a timed wallet that will release the tokens every 6 months
+        // create a timed wallet that will release tokens every 6 months
         GPTTeamTokenTimelock timelock = new GPTTeamTokenTimelock(token, walletTeam, closingTime);
-        _deliverTokens(address(timelock), TEAM_ALLOCATION);
-
-        // _deliverTokens(walletTeam, TEAM_ALLOCATION); // TODO: replace 
+        teamTimelock = address(timelock);
+        _deliverTokens(teamTimelock, TEAM_ALLOCATION);
 
         // 10% of the total number of GPT tokens will be allocated to the game support fund
         _deliverTokens(walletGameSupportFund, GAME_SUPPORT_FUND_ALLOCATION);
@@ -118,9 +119,8 @@ contract GPTCrowdsale is FinalizableCrowdsale, MintedCrowdsale, WhitelistedCrowd
         // 10% of the total number of GPT tokens will be allocated to the advisors and partnership
         _deliverTokens(walletAdvisorsAndPartnership, ADVISORS_AND_PARTNERSHIP_ALLOCATION);
 
-        // The ramaining tokens that ware not sold in the crowdsale will be sent to a game support fund
-        // TODO: or burned?
-        uint256 tokensLeft = CROWDSALE_ALLOCATION - tokensAllocated; //remainingTokens();
+        // The ramaining tokens that were not sold in the crowdsale will be allocated to a game support fund
+        uint256 tokensLeft = CROWDSALE_ALLOCATION - tokensAllocated;
         _deliverTokens(walletGameSupportFund, tokensLeft);
 
         GPToken(token).finishMinting();

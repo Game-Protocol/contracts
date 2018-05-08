@@ -26,7 +26,6 @@ contract('GPTTeamTokenTimelock', accounts => {
 
   beforeEach(async function () {
     this.token = await GPToken.new({ from: owner });
-    // token = await SimpleToken.new({ from: owner });
     this.releaseTime = latestTime.latestTime() + increaseTime.duration.weeks(1);
     this.timelock = await GPTTeamTokenTimelock.new(this.token.address, beneficiary, this.releaseTime);
     let transfer = await this.token.mint(this.timelock.address, team_tokens, { from: owner });

@@ -1,6 +1,8 @@
 var GPToken = artifacts.require("./GPToken.sol");
 var GPTCrowdsale = artifacts.require("./GPTCrowdsale.sol");
 var fs = require('fs');
+const verifyCode = require('../scripts/verifyCode');
+const toTimestamp = require('../scripts/toTimestamp');
 
 
 module.exports = function (deployer) {
@@ -11,24 +13,17 @@ module.exports = function (deployer) {
   var bountyProgram = prefs_json["bountyprogram"];
   var gameSupportFund = prefs_json["gamesupportfund"];
 
-  var start = getTimeStamp('2018-05-15 12:00:00');
-  var end = getTimeStamp('2018-07-01 12:00:00');
+  var start = toTimestamp.getTimeStamp('2018-05-15 12:00:00');
+  var end = toTimestamp.getTimeStamp('2018-07-01 12:00:00');
   var rate = new web3.BigNumber(2000);
 
+  verifyCode.flatten("GPToken.sol");
+  verifyCode.flatten("GPTCrowdsale.sol");
+
   deployer.deploy(GPToken).then(function () {
+    var types = ["uint256" ,"uint256" ,"uint256" ,"address" ,"address" ,"address" ,"address" , "address" , "address"];
+    var params = [start, end, rate, beneficiary, gameSupportFund, bountyProgram, advisors, team, GPToken.address];
+    verifyCode.toABI("GPTCrowdsale.abi.txt", types, params);
     deployer.deploy(GPTCrowdsale, start, end, rate, beneficiary, gameSupportFund, bountyProgram, advisors, team, GPToken.address);
   });
 };
-
-
-// var start = getTimeStamp('2018-05-15 12:00:00');
-// var end = getTimeStamp('2018-07-01 12:00:00');
-function getTimeStamp(input) {
-  var parts = input.trim().split(' ');
-  var date = parts[0].split('-');
-  var time = (parts[1] ? parts[1] : '00:00:00').split(':');
-
-  // NOTE:: Month: 0 = January - 11 = December.
-  var d = Date.UTC(date[0], date[1] - 1, date[2], time[0], time[1], time[2]);
-  return d / 1000;
-}

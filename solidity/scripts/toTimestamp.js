@@ -8,10 +8,16 @@ function getTimeStamp(input) {
     return d / 1000;
 }
 
-// '2017-12-12 12:00:00' 1513080000
-module.exports = function (done) {
+function printDates() {
     var start = getTimeStamp('2018-05-01 12:00:00');
     var end = getTimeStamp('2018-06-01 12:00:00');
 
     console.log(start + " - " + end);
 }
+
+// var start = getTimeStamp('2018-05-01 12:00:00');
+// var end = getTimeStamp('2018-06-01 12:00:00');
+module.exports = {
+    getTimeStamp: getTimeStamp,
+    printDates: printDates,
+};

@@ -3,6 +3,7 @@
 /solidity/node_modules
 /solidity/bin
 /solidity/build
+/out
 constructor_arguments_in_abi.js
 instructions.txt
 TestCases.xlsx

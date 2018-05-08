@@ -29,5 +29,11 @@ module.exports = {
       provider: new HDWalletProvider(key, "https://rinkeby.infura.io/" + infuraApi),
       network_id: 4,
     }
+  },
+  solc: {
+    optimizer: {
+      enabled: true,
+      runs: 200
+    }
   }
 };
