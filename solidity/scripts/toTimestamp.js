@@ -1,23 +1,30 @@
 function getTimeStamp(input) {
-    var parts = input.trim().split(' ');
-    var date = parts[0].split('-');
-    var time = (parts[1] ? parts[1] : '00:00:00').split(':');
+  var parts = input.trim().split(' ');
+  var date = parts[0].split('-');
+  var time = (parts[1] ? parts[1] : '00:00:00').split(':');
 
-    // NOTE:: Month: 0 = January - 11 = December.
-    var d = Date.UTC(date[0], date[1] - 1, date[2], time[0], time[1], time[2]);
-    return d / 1000;
+  // NOTE:: Month: 0 = January - 11 = December.
+  var d = Date.UTC(date[0], date[1] - 1, date[2], time[0], time[1], time[2]);
+  return d / 1000;
 }
 
 function printDates() {
-    var start = getTimeStamp('2018-05-01 12:00:00');
-    var end = getTimeStamp('2018-06-01 12:00:00');
+  var start = getTimeStamp('2018-05-01 12:00:00');
+  var end = getTimeStamp('2018-06-01 12:00:00');
 
-    console.log(start + " - " + end);
+  console.log(start + " - " + end);
+}
+
+function getTimeStampMinutesFromNow(minutes) {
+  var minutesLater = new Date();
+  minutesLater.setMinutes(minutesLater.getMinutes() + minutes);
+  return minutesLater / 1000;
 }
 
 // var start = getTimeStamp('2018-05-01 12:00:00');
 // var end = getTimeStamp('2018-06-01 12:00:00');
 module.exports = {
-    getTimeStamp: getTimeStamp,
-    printDates: printDates,
+  getTimeStamp: getTimeStamp,
+  printDates: printDates,
+  getTimeStampMinutesFromNow: getTimeStampMinutesFromNow
 };
