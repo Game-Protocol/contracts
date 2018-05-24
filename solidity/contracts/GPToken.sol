@@ -4,7 +4,6 @@ import "./token/ERC20/PausableToken.sol";
 import "./token/ERC20/DetailedERC20.sol";
 import "./token/ERC20/BurnableToken.sol";
 import "./token/ERC20/MintableToken.sol";
-import "./token/ERC20/CappedToken.sol";
 import "./ownership/NoOwner.sol";
 
 /**

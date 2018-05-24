@@ -16,8 +16,8 @@ module.exports = function (deployer) {
 
   var start = toTimestamp.getTimeStampMinutesFromNow(5); // for testing
   var end = toTimestamp.getTimeStampMinutesFromNow(10);
-  // var start = toTimestamp.getTimeStamp('2018-05-15 12:00:00');
-  // var end = toTimestamp.getTimeStamp('2018-07-01 12:00:00');
+  // var start = toTimestamp.getTimeStamp('2018-08-01 12:00:00');
+  // var end = toTimestamp.getTimeStamp('2018-09-15 12:00:00');
   console.log(start + " - " + end);
 
   var rate = new web3.BigNumber(2000); // exchange rate: GPT/ETH

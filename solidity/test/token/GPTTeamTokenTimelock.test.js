@@ -35,9 +35,9 @@ contract('GPTTeamTokenTimelock', accounts => {
     this.firstReleaseTime = this.releaseTime;
     // second release time is six months after the end of the crowdsale
     this.secondReleaseTime = this.releaseTime + increaseTime.duration.weeks(24);
-    // second release time is a year after the end of the crowdsale
+    // third release time is a year after the end of the crowdsale
     this.thirdReleaseTime = this.releaseTime + increaseTime.duration.weeks(48);
-    // second release time is a year and a half after the end of the crowdsale
+    // fourth release time is a year and a half after the end of the crowdsale
     this.fourthReleaseTime = this.releaseTime + increaseTime.duration.weeks(72);
   });
 
@@ -80,23 +80,6 @@ contract('GPTTeamTokenTimelock', accounts => {
     beforeEach(async function () {
       const balance = await this.token.balanceOf(beneficiary);
       balance.should.be.bignumber.equal(0);
-    });
-
-    it('release amounts matching the plan', async function () { // 24, 48, 72
-      var amount = await this.timelock.getReleasedAmount();
-      amount.should.be.bignumber.equal(0);
-      await increaseTime.increaseTimeTo(this.firstReleaseTime + increaseTime.duration.seconds(5));
-      amount = await this.timelock.getReleasedAmount();
-      amount.should.be.bignumber.equal(PART_1);
-      await increaseTime.increaseTimeTo(this.secondReleaseTime + increaseTime.duration.seconds(5));
-      amount = await this.timelock.getReleasedAmount();
-      amount.should.be.bignumber.equal(PART_2);
-      await increaseTime.increaseTimeTo(this.thirdReleaseTime + increaseTime.duration.seconds(5));
-      amount = await this.timelock.getReleasedAmount();
-      amount.should.be.bignumber.equal(PART_3);
-      await increaseTime.increaseTimeTo(this.fourthReleaseTime + increaseTime.duration.seconds(5));
-      amount = await this.timelock.getReleasedAmount();
-      amount.should.be.bignumber.equal(PART_4);
     });
 
     describe('first part', function () {

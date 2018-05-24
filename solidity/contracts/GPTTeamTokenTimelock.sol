@@ -63,15 +63,11 @@ contract GPTTeamTokenTimelock {
         releasedTokens = releasedTokens.add(tokenAmount);
     }
 
-    function getReleasedAmount() public view returns(uint256) {
-        return _getReleasedAmount();
-    }
-
     /**
     * @dev Get release amount. Override this method to modify the amount released when release is called.
     */
     function _getReleasedAmount() internal view returns(uint256) {
-        // before the releaseTime, so amount is 0
+        // before the releaseTime, so the amount is 0
         // solium-disable-next-line security/no-block-members
         if (now < releaseTime) { 
             return 0; 
@@ -81,17 +77,17 @@ contract GPTTeamTokenTimelock {
         if (now < (releaseTime.add(24 weeks))) { 
             return PART_1.sub(releasedTokens);
         }
-        // part 2/4 is released 1 * 6 months after releaseTime
+        // part 2/4 is released 6 months after releaseTime
         // solium-disable-next-line security/no-block-members
         if (now < (releaseTime.add(48 weeks))) { 
             return PART_2.sub(releasedTokens); 
         }
-        // part 3/4 is released 2 * 6 months after releaseTime
+        // part 3/4 is released 12 months after releaseTime
         // solium-disable-next-line security/no-block-members
         if (now < (releaseTime.add(72 weeks))) { 
             return PART_3.sub(releasedTokens); 
         }
-        // part 4/4 is released 3 * 6 months after releaseTime
+        // part 4/4 is released 18 months after releaseTime
         return PART_4.sub(releasedTokens);
     }
 }

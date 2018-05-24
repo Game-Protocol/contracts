@@ -1,6 +1,5 @@
 var fs = require('fs');
 var abi = require('ethereumjs-abi');
-var BN = require('bn.js');
 var exec = require('child_process').exec;
 
 // 1. flatten function - function that gets a contract file as a 
@@ -11,7 +10,7 @@ function flatten(file) {
 }
 
 // 2. constructor abi - function that gets a list of parameter types and a 
-// list of parameters and saves to out folder an abi encoded string
+// list of parameter values and saves to out folder an abi encoded string
 function toABI(file, types, params) {
   var parameterValues = [];
   for (let i = 0; i < params.length; i++) {
@@ -41,7 +40,6 @@ function saveToFile(file, content) {
     if (err) {
       return console.log(err);
     }
-    // console.log("The file was saved!");
   });
 }
 

@@ -8,13 +8,6 @@ function getTimeStamp(input) {
   return d / 1000;
 }
 
-function printDates() {
-  var start = getTimeStamp('2018-05-01 12:00:00');
-  var end = getTimeStamp('2018-06-01 12:00:00');
-
-  console.log(start + " - " + end);
-}
-
 function getTimeStampMinutesFromNow(minutes) {
   var minutesLater = new Date();
   minutesLater.setMinutes(minutesLater.getMinutes() + minutes);
@@ -25,6 +18,5 @@ function getTimeStampMinutesFromNow(minutes) {
 // var end = getTimeStamp('2018-06-01 12:00:00');
 module.exports = {
   getTimeStamp: getTimeStamp,
-  printDates: printDates,
   getTimeStampMinutesFromNow: getTimeStampMinutesFromNow
 };
