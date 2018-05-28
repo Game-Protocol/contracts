@@ -29,18 +29,18 @@ contract GPToken is PausableToken, BurnableToken, DetailedERC20, MintableToken, 
 
     function disableTransfers(bool _disable) public {
         if(_disable) {
-            pause();
+            super.pause();
         }
         else {
-            unpause();
+            super.unpause();
         }
     }
 
     function issue(address _to, uint256 _amount) public {
-        mint(_to, _amount);
+        require(super.mint(_to, _amount));
     }
 
     function destroy(address _from, uint256 _amount) public {
-        _burn(_from, _amount);
+        super._burn(_from, _amount);
     }
 }
