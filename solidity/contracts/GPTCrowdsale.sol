@@ -8,8 +8,6 @@ import "./crowdsale/validation/CappedTokenCrowdsale.sol";
 import "./GPTTeamTokenTimelock.sol";
 import "./crowdsale/Crowdsale.sol";
 
-import "./GPToken.sol";
-
 /**
  * @title GPTCrowdsale
  * @dev Game Protocol Crowdsale contract.
